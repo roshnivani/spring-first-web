@@ -20,8 +20,6 @@ public class ProductController {
 
 	@Autowired
 	ProductDao productDao;
-
-	 
 	@PostMapping("/products")
 	public ResponseBean<ProductBean> addProduct(@RequestBody ProductBean product) {
 
