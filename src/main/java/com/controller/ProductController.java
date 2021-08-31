@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bean.ProductBean;
 import com.bean.ResponseBean;
+import com.dao.CustomerDao;
 import com.dao.ProductDao;
 
 @RestController
@@ -20,11 +22,19 @@ public class ProductController {
 
 	@Autowired
 	ProductDao productDao;
+	@Autowired
+	CustomerDao customerDao;
 	@PostMapping("/products")
-	public ResponseBean<ProductBean> addProduct(@RequestBody ProductBean product) {
-
+	public ResponseBean<ProductBean> addProduct(@RequestBody ProductBean product,@RequestHeader("authToken") String authToken) {
+		// authToken=customerDao.getCustomerByToken(authToken);
 		ResponseBean<ProductBean> resp = new ResponseBean<>();
-
+		if(authToken==null)
+		{
+			return resp;
+			
+		}
+		else
+		{
 		boolean status = productDao.insertProduct(product);
 
 		if (status) {
@@ -37,8 +47,8 @@ public class ProductController {
 			resp.setMessage("Product not saved");
 			resp.setData(product);
 		}
-
 		return resp;
+	}
 	}
 	@GetMapping("/products")
 	public ResponseBean<List<ProductBean>> getAllProducts() {

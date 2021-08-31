@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.bean.CustomerBean;
+import com.bean.LoginBean;
 import com.bean.ProductBean;
 
 @Repository
@@ -29,13 +30,13 @@ public class CustomerDao {
 		return products;
 	}
 
-	public CustomerBean authenticate(String email, String password) {
+	public LoginBean authenticate(String email, String password) {
 
-		CustomerBean customer = null;
+		LoginBean customer = null;
 
 		try {
 			customer = stmt.queryForObject("select * from customer where email like ? and password like ?",
-					new BeanPropertyRowMapper<CustomerBean>(CustomerBean.class), email, password);
+					new BeanPropertyRowMapper<LoginBean>(LoginBean.class), email, password);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -95,10 +96,12 @@ public class CustomerDao {
 
 	}
 
-	public CustomerBean update(int id) {
-		CustomerBean bean = getCustomerById(id);
-		stmt.update("update customer set firstName'"+bean.getFirstName()+"'email'"+bean.getEmail()+"'password'"+bean.getPassword()+"'where customerId=?",id);
-		return bean;
-	}
+	/*
+	 * public CustomerBean update(int id) { CustomerBean bean =
+	 * getCustomerById(bean.getCustomerId());
+	 * stmt.update("update customer set firstName='"+bean.getFirstName()+"',email='"
+	 * +bean.getEmail()+"',password='"+bean.getPassword()+"'where customerId='"+bean
+	 * .getCustomerId()+"'"); return bean; }
+	 */
 
 }

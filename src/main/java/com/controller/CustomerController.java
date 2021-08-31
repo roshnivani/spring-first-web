@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bean.CustomerBean;
+import com.bean.LoginBean;
 import com.bean.ProductBean;
 import com.bean.ResponseBean;
 import com.dao.CustomerDao;
@@ -51,9 +52,9 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/authenticate")
-	public ResponseBean<CustomerBean> authenticate(@RequestBody CustomerBean customer) {
-		ResponseBean<CustomerBean> res = new ResponseBean<>();
-
+	public ResponseBean<LoginBean> authenticate(@RequestBody LoginBean customer) {
+		ResponseBean<LoginBean> res = new ResponseBean<>();
+		CustomerBean c=new CustomerBean();
 		customer = customerDao.authenticate(customer.getEmail(), customer.getPassword());
 		if (customer == null) {
 			res.setStatus(-1);
@@ -61,8 +62,8 @@ public class CustomerController {
 			res.setMessage("Invalid Credentials");
 		} else {
 			String token = tokenGenerator.generateToken();
-			customer.setToken(token);
-			customerDao.updateToken(customer.getCustomerId(), token);
+			c.setToken(token);
+			customerDao.updateToken(c.getCustomerId(), token);
 			res.setData(customer);
 			res.setStatus(200);
 			res.setMessage("authentication done");
@@ -107,31 +108,29 @@ public class CustomerController {
 		}
 		return res;
 	}
-	@GetMapping("/customers/{customerId}")
-	public ResponseBean<CustomerBean> getUserById(@PathVariable("customerId") int customerId) {
-		ResponseBean<CustomerBean> res = new ResponseBean<>();
-		CustomerBean user = customerDao.update(customerId);
-		
 
-		if (user == null) {
-			res.setStatus(-1);//
-			res.setMessage("Invalid UserId");
-		} else {	
-			res.setStatus(200);
-			res.setData(user);
-			res.setMessage("User Retrived");
-		}
-		return res;
-	}
 	/*
-	 * @PutMapping("/customers") public ResponseBean<CustomerBean>
-	 * udpateUser(CustomerBean user) { ResponseBean<CustomerBean> res = new
-	 * ResponseBean<>(); user = customerDao.update(user);
+	 * @GetMapping("/customers/{customerId}") public ResponseBean<CustomerBean>
+	 * getUserById(@PathVariable("customerId") int customerId) {
+	 * ResponseBean<CustomerBean> res = new ResponseBean<>(); CustomerBean user =
+	 * customerDao.update(customerId);
 	 * 
-	 * if (user == null) { res.setStatus(-1); res.setMessage("invalid userId"); }
-	 * else { res.setStatus(200); res.setMessage("user updated...");
-	 * res.setData(user); }
 	 * 
-	 * return res;// }
+	 * if (user == null) { res.setStatus(-1);// res.setMessage("Invalid UserId"); }
+	 * else { res.setStatus(200); res.setData(user);
+	 * res.setMessage("User Retrived"); } return res; }
 	 */
+	@PutMapping("/customers/{customerId}") 
+	public ResponseBean<CustomerBean>udpateUser(@PathVariable("customerId") int id)
+	{ 
+		ResponseBean<CustomerBean> res = new ResponseBean<>(); 
+		CustomerBean user = customerDao.update(id);
+	
+	if (user == null) { res.setStatus(-1); res.setMessage("invalid userId"); }
+	else { res.setStatus(200); res.setMessage("user updated...");
+	res.setData(user); }
+	
+	return res;// }
+	
+}
 }
